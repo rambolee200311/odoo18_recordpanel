@@ -24,6 +24,17 @@ export class AdvancedMany2OneField extends Many2OneField {
     }
 
     openAction() {
+        if (this.openMode === "extend") {
+            const targetResId = Number(this.resId);
+            if (this.relation && Number.isInteger(targetResId) && targetResId > 0) {
+                this.env.bus.trigger("wd-preview:open", {
+                    targetModel: this.relation,
+                    targetResId,
+                });
+                return;
+            }
+            return super.openAction();
+        }
         if (this.openMode !== "tab") {
             return super.openAction();
         }

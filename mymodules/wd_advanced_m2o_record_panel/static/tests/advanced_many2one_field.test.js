@@ -110,4 +110,20 @@ describe("advanced_many2one_field", () => {
         expect(warnings[0].options.type).toBe("warning");
         expect.verifySteps([]);
     });
+
+    test("dispatches extend mode through the page event bus", () => {
+        const events = [];
+        AdvancedMany2OneField.prototype.openAction.call({
+            openMode: "extend",
+            relation: "res.partner",
+            resId: 25,
+            env: { bus: { trigger: (name, payload) => events.push({ name, payload }) } },
+        });
+        expect(events).toEqual([
+            {
+                name: "wd-preview:open",
+                payload: { targetModel: "res.partner", targetResId: 25 },
+            },
+        ]);
+    });
 });

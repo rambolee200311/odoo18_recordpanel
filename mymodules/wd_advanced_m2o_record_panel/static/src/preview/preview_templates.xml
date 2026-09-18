@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="wd_advanced_m2o_record_panel.FormView" t-inherit="web.FormView" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('o_form_view_container')]" position="after">
+            <PreviewHost/>
+        </xpath>
+    </t>
+    <t t-name="wd_advanced_m2o_record_panel.PreviewHost">
+        <aside class="o_wd_preview_host" t-if="state.loading or state.payload">
+            <t t-if="state.loading">
+                <div class="o_wd_preview_loading">Loading…</div>
+            </t>
+            <PreviewRenderer t-else="" payload="state.payload" onClose.bind="close" onOpenRecord.bind="openRecord"/>
+        </aside>
+    </t>
+    <t t-name="wd_advanced_m2o_record_panel.PreviewRenderer">
+        <section class="o_wd_preview_panel">
+            <header class="o_wd_preview_header">
+                <strong><t t-esc="title"/></strong>
+                <button type="button" class="btn btn-link" t-on-click="props.onClose">×</button>
+            </header>
+            <t t-if="props.payload.status === 'access_denied'">
+                <p class="alert alert-warning">This record is not available.</p>
+            </t>
+            <t t-else="">
+                <p t-if="props.payload.message" class="text-muted"><t t-esc="props.payload.message"/></p>
+                <dl t-if="props.payload.rows">
+                    <t t-foreach="props.payload.rows" t-as="row" t-key="row.name">
+                        <dt><t t-esc="row.label"/></dt>
+                        <dd><t t-esc="row.value"/></dd>
+                    </t>
+                </dl>
+                <button t-if="canOpenRecord" type="button" class="btn btn-primary" t-on-click="openRecord">
+                    Open Full Record
+                </button>
+            </t>
+        </section>
+    </t>
+</templates>

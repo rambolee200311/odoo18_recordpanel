@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 
 
 class PreviewConfiguration(models.Model):
@@ -53,3 +53,70 @@ class PreviewConfiguration(models.Model):
                         "Remove preview fields before changing the target model."
                     )
         return super().write(vals)
+
+    @api.model
+    def load_preview_data(self, target_model, target_res_id):
+        """Return only data the current user may read for a configured target."""
+        if not isinstance(target_model, str) or not target_model.strip():
+            return {"status": "access_denied", "code": "invalid_target"}
+        if isinstance(target_res_id, str) and target_res_id.isdecimal():
+            target_res_id = int(target_res_id)
+        if isinstance(target_res_id, bool) or not isinstance(target_res_id, int):
+            return {"status": "access_denied", "code": "invalid_target"}
+        try:
+            target = self.env[target_model].browse(target_res_id)
+        except KeyError:
+            return {"status": "access_denied", "code": "invalid_target"}
+        try:
+            target.check_access_rights("read")
+            target.check_access_rule("read")
+        except AccessError:
+            return {"status": "access_denied", "code": "access_denied"}
+        if not target.exists():
+            return {"status": "access_denied", "code": "access_denied"}
+
+        configuration = self.search(
+            [("active", "=", True), ("target_model_id.model", "=", target_model)],
+            limit=1,
+        )
+        identity = {
+            "model": target_model,
+            "resId": target.id,
+            "displayName": target.display_name,
+        }
+        if not configuration:
+            return {
+                "status": "fallback",
+                "target": identity,
+                "message": "No preview fields are configured for this record.",
+                "code": "no_configuration",
+            }
+
+        rows = []
+        for line in configuration.line_ids.sorted("sequence"):
+            field_name = line.field_id.name
+            field = target._fields.get(field_name)
+            if not field:
+                continue
+            try:
+                target.check_field_access_rights("read", [field_name])
+                value = target.read([field_name], load=False)[0][field_name]
+                if field.type == "many2one" and value:
+                    value = target[field_name].display_name
+                if not isinstance(value, (str, int, float, bool)) and value is not None:
+                    value = str(value)
+                rows.append({
+                    "name": field_name,
+                    "label": line.field_id.field_description,
+                    "value": value,
+                })
+            except (AccessError, KeyError):
+                continue
+        if not rows:
+            return {
+                "status": "fallback",
+                "target": identity,
+                "message": "No readable preview fields are configured for this record.",
+                "code": "no_readable_fields",
+            }
+        return {"status": "ready", "target": identity, "rows": rows}
