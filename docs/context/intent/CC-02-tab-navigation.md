@@ -1,6 +1,6 @@
 # CC-02 Tab Navigation
 
-> **Status: v0.1.1 DRAFT — NOT AUTHORIZED FOR IMPLEMENTATION**
+> **Status: v1.0.0 FROZEN — IMPLEMENTATION AUTHORIZED**
 >
 > 本文档只起草 CC-02 Coding Contract。它不授权编码、Freeze、修改 CC-01 production implementation、实现 Extend/Preview、Commit 或 Push。完成本 Draft 后停止，等待用户评审。
 
@@ -10,8 +10,8 @@
 |---|---|
 | Contract ID | CC-02 |
 | Contract Name | Tab Navigation |
-| 版本 | v0.1.1 Draft |
-| 状态 | Draft / Not Authorized for Implementation |
+| 版本 | v1.0.0 Frozen |
+| 状态 | Frozen / Implementation Authorized |
 | Odoo | 18.0 Community Edition |
 | 正式模块 | `mymodules/wd_advanced_m2o_record_panel/` |
 | 最小正式依赖 | `web` |
@@ -32,10 +32,14 @@
 - 重新读取并核对权威基线、正式模块代码和 Odoo 18 官方相关源码；
 - 创建本 CC-02 Draft 及起草报告。
 
+本轮授权：
+
+- 将 CC-02 v0.1.1 Draft 冻结为 v1.0.0 Frozen；
+- 实施 Tab Handler 和 Navigation Builder；
+- 完成自动化验证和 Browser/HVR Checklist。
+
 本轮未授权：
 
-- 实施 CC-02；
-- 修改 CC-01 production implementation；
 - 实现 Extend、Preview Pane、Preview State、Server Preview Loader 或 Renderer；
 - 修改 Frozen SRS、TDD、Implementation Plan、TVR、Spike 或 CC-01；
 - 创建 CC-03 或 CC-04；
@@ -46,15 +50,13 @@
 ```text
 CC-02 Draft
     ↓
-STOP
-    ↓
-User Review
-    ↓
 CC-02 Frozen
     ↓
-Explicit Implementation Authorization
+Implementation
     ↓
-Coding
+Automated Validation + Browser/HVR
+    ↓
+STOP
 ```
 
 ## 3. Re-read Baseline
@@ -605,7 +607,7 @@ None. The target identity, optional target-only navigation decoration, source `a
 
 ## 25. Draft Self-Check
 
-- [x] Status 明确为 v0.1.1 Draft / Not Authorized for Implementation
+- [x] Status 更新为 v1.0.0 Frozen / Implementation Authorized
 - [x] 重新读取 Frozen SRS/TDD/Implementation Plan、TVR、CC-01 和 CC-01 evidence
 - [x] 重新读取正式模块代码和 Odoo 18 官方 Many2one/Router/Action/browser source
 - [x] 明确 Tab Handler 与 Navigation Builder 职责
@@ -618,7 +620,8 @@ None. The target identity, optional target-only navigation decoration, source `a
 - [x] 明确 JS/Browser/HVR/Acceptance/Stop contracts
 - [x] 明确 CC-03 reuse boundary
 - [x] 未修改 Frozen 上游文档、CC-01、Spike 或官方源码
-- [x] 未实现 CC-02
+- [x] 已按 Frozen CC-02 实施 Tab Handler + Navigation Builder
+- [x] 已创建 ATR 和 Browser/HVR Checklist；新 Tab 的人工 HVR 仍待完成
 - [x] 未创建 CC-03/CC-04
 - [x] 未 Commit/Push
 
@@ -628,3 +631,4 @@ None. The target identity, optional target-only navigation decoration, source `a
 |---|---|---|---|
 | v0.1.0 | 2026-09-18 | Draft / Not Authorized for Implementation | 基于 Frozen SRS、TDD、Implementation Plan、TVR、CC-01 evidence 和 Odoo 18 官方源码起草 CC-02 Tab Navigation Contract；未实施、未 Commit、未 Push |
 | v0.1.1 | 2026-09-18 | Draft / Not Authorized for Implementation | 根据评审收口 target model/resId identity、target-only optional navigation state、source `active_id` 边界、Dialog native semantics、popup failure contract、Router URL 表述、适用的 Form 元素和测试类型；Contract Review Questions = none；未实施、未 Commit、未 Push |
+| v1.0.0 | 2026-09-18 | Frozen / Implementation Authorized | 用户批准冻结并授权实施 Tab Handler + Navigation Builder；禁止进入 CC-03、实现 Extend/Preview、Commit 或 Push；完成自动化验证和 Browser/HVR 后停止 |

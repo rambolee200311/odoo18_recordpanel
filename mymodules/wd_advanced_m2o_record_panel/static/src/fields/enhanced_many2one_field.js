@@ -1,8 +1,11 @@
+import { browser } from "@web/core/browser/browser";
+import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import {
     Many2OneField,
     many2OneField,
 } from "@web/views/fields/many2one/many2one_field";
+import { buildRecordNavigation } from "../navigation/record_navigation";
 
 const OPEN_MODES = new Set(["tab", "extend"]);
 
@@ -18,6 +21,25 @@ export class AdvancedMany2OneField extends Many2OneField {
 
     get openMode() {
         return this.props.openMode;
+    }
+
+    openAction() {
+        if (this.openMode !== "tab") {
+            return super.openAction();
+        }
+        const navigation = buildRecordNavigation(this.relation, this.resId);
+        if (!navigation.ok) {
+            this.notification.add(_t("Unable to open the related record in a new tab."), {
+                type: "warning",
+            });
+            return;
+        }
+        const openedWindow = browser.open(navigation.url, "_blank");
+        if (!openedWindow) {
+            this.notification.add(_t("The browser blocked opening a new tab."), {
+                type: "warning",
+            });
+        }
     }
 }
 

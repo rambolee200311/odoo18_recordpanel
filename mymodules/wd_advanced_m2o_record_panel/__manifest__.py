@@ -13,9 +13,11 @@
     "assets": {
         "web.assets_backend": [
             "wd_advanced_m2o_record_panel/static/src/fields/enhanced_many2one_field.js",
+            "wd_advanced_m2o_record_panel/static/src/navigation/record_navigation.js",
         ],
-        "web.assets_tests": [
+        "web.assets_unit_tests": [
             "wd_advanced_m2o_record_panel/static/src/fields/enhanced_many2one_field.js",
+            "wd_advanced_m2o_record_panel/static/src/navigation/record_navigation.js",
             "wd_advanced_m2o_record_panel/static/tests/advanced_many2one_field.test.js",
         ],
     },
