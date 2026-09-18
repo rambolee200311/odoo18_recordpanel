@@ -1,0 +1,64 @@
+/* TECHNICAL SPIKE — NOT PRODUCTION CODE. */
+
+.o_form_view:has(> .o_form_view_container + .o_spike02_placeholder) {
+    display: flex;
+    flex-direction: row !important;
+    align-items: stretch;
+}
+
+.o_form_view:has(> .o_form_view_container + .o_spike02_placeholder) > .o_form_view_container {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.o_spike02_placeholder {
+    box-sizing: border-box;
+    flex: 0 0 20rem;
+    min-width: 16rem;
+    padding: 1rem;
+    overflow: auto;
+    border-left: 1px dashed #714b67;
+    background: #f8f4f7;
+    color: #493244;
+}
+
+.o_spike02_placeholder.is-open {
+    background: #f1e8ef;
+}
+
+.o_spike02_badge {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.1rem 0.35rem;
+    border: 1px solid #714b67;
+    border-radius: 0.25rem;
+    font-size: 0.7rem;
+}
+
+.o_spike02_state {
+    min-height: 2rem;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    border: 1px solid #d8c7d2;
+    background: #fff;
+    font-family: monospace;
+}
+
+.o_spike02_controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+@media (max-width: 768px) {
+    .o_form_view:has(> .o_form_view_container + .o_spike02_placeholder) {
+        flex-direction: column !important;
+    }
+
+    .o_spike02_placeholder {
+        flex: 0 0 auto;
+        min-width: 0;
+        border-top: 1px dashed #714b67;
+        border-left: 0;
+    }
+}

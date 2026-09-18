@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-inherit="web.FormView" t-inherit-mode="extension">
+        <xpath expr="//div[contains(@class, 'o_form_view_container')]" position="after">
+            <div t-if="!env.inDialog"
+                 t-att-class="'o_spike02_placeholder ' + (spike02State.open ? 'is-open' : 'is-idle')"
+                 data-testid="spike02-placeholder">
+                <strong>Technical Placeholder</strong>
+                <span class="o_spike02_badge">SPIKE-02</span>
+
+                <div class="o_spike02_state" data-testid="spike02-state">
+                    <span t-if="spike02State.open">
+                        source=<t t-esc="spike02State.source"/>
+                        value=<t t-esc="spike02State.value"/>
+                    </span>
+                    <span t-else="">closed</span>
+                </div>
+
+                <div class="o_spike02_controls">
+                    <button type="button" class="btn btn-secondary btn-sm" t-on-click="() => this.spike02Activate('A')">
+                        Source A
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" t-on-click="() => this.spike02Activate('B')">
+                        Source B
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="() => this.spike02Update('A')">
+                        Update A
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="() => this.spike02Update('B')">
+                        Update B
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="() => this.spike02Clear('A')">
+                        Clear A
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="() => this.spike02Clear('B')">
+                        Clear B
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" t-on-click="this.spike02Close">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </xpath>
+    </t>
+</templates>

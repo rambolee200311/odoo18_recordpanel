@@ -1,6 +1,6 @@
 # TV-01 Many2one + Form Preview 技术可行性验证计划
 
-> **文档状态：Draft**
+> **文档状态：Frozen**
 >
 > 本文件只定义技术事实验证计划，不是 TDD、Implementation Plan、Coding Contract 或正式实现方案。
 
@@ -12,7 +12,7 @@
 | 标题 | Many2one + Form Preview 技术可行性验证计划 |
 | 文档路径 | `docs/context/designing/TV-01-many2one-form-preview-feasibility-plan.md` |
 | 版本 | v0.1.1 |
-| 状态 | Draft |
+| 状态 | Frozen |
 | 日期 | 2026-09-17 |
 | Odoo 版本 | 18.0 Community Edition |
 | 仓库基线 | `2d43189`（`main`，与 `origin/main` 一致） |
@@ -20,7 +20,7 @@
 | 上游需求 | `docs/requirement/需求分析报告RAR.md`，讨论稿 |
 | Agent 原则 | `docs/context/principle/AGENT_OPERATION_PRINCIPLES.md` |
 | 作者 | AI assistant |
-| 审批状态 | 待用户评审和明确批准 |
+| 审批状态 | 用户已批准冻结（2026-09-17） |
 
 ### 1.3 文档目录依据
 
@@ -34,7 +34,7 @@ TV Plan 起草时工作区存在项目认知文件的未提交变更。该变更
 
 - 本计划依据的是已冻结的 SRS v1.0.0，不把上游讨论稿当作冻结需求。
 - SRS 后续若发生需求变更，必须重新检查本计划的 TVQ、验收标准和实验范围。
-- 本文件是 Draft，未获批准前不得执行其中的运行时观察或最小实验。
+- 本文件已冻结；Phase A 执行仍受本计划的 Phase A / Phase B Gate 约束。
 
 ---
 
@@ -747,7 +747,7 @@ TV Verification Report 不得把候选方案直接写成最终架构，也不得
 
 ## 15. 当前阶段结论
 
-本文件仅为 **TV Plan v0.1.1 Draft**。
+本文件为 **TV Plan v0.1.1 Frozen**。
 
 当前可以确认：
 
@@ -768,4 +768,4 @@ TV Verification Report 不得把候选方案直接写成最终架构，也不得
 - 动态字段读取与记录级权限安全边界；
 - 非覆盖布局和窄屏降级在标准 Form 中的可靠性。
 
-等待用户评审和明确批准后，才允许进入 TV 执行阶段。
+Phase A 已获用户明确批准；完成本报告后必须停止，等待用户评审，不得自行进入 Phase B。
