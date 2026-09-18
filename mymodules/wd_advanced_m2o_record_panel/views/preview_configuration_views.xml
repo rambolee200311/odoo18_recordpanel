@@ -1,0 +1,47 @@
+<odoo>
+    <record id="view_preview_configuration_tree" model="ir.ui.view">
+        <field name="name">wd.preview.configuration.tree</field>
+        <field name="model">wd.preview.configuration</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="target_model_id"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_preview_configuration_form" model="ir.ui.view">
+        <field name="name">wd.preview.configuration.form</field>
+        <field name="model">wd.preview.configuration</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="target_model_id"/>
+                        <field name="active"/>
+                    </group>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="sequence"/>
+                            <field name="field_id" domain="[('model_id', '=', parent.target_model_id)]"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_preview_configuration" model="ir.actions.act_window">
+        <field name="name">Preview Configurations</field>
+        <field name="res_model">wd.preview.configuration</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem
+        id="menu_preview_configuration"
+        name="Many2one Preview Configurations"
+        action="action_preview_configuration"
+        groups="wd_advanced_m2o_record_panel.group_preview_configuration_admin"
+    />
+</odoo>

@@ -1,6 +1,6 @@
 # Many2one 关联记录查看增强技术设计文档（TDD）
 
-> **版本状态：v1.0.0 Frozen / 技术设计已冻结 / 允许进入后续 Implementation Plan**
+> **版本状态：v1.0.1 Frozen / 技术设计已冻结 / 允许进入后续 Implementation Plan**
 >
 > 本文档是已冻结的技术设计，不是 Implementation Plan 或 Coding Contract，也不单独构成正式编码授权。后续实现必须遵守本文档，并经过单独的 Implementation Plan / Coding Contract 评审。
 
@@ -9,14 +9,14 @@
 | 项目 | 内容 |
 |---|---|
 | Document ID | TDD-M2O-RELATED-RECORD-VIEW |
-| 版本 | v1.0.0 Frozen |
+| 版本 | v1.0.1 Frozen |
 | 状态 | 技术设计已冻结；仅允许进入后续 Implementation Plan / Coding Contract 评审，不等同于编码授权 |
 | Odoo | 18.0 Community Edition |
 | 正式模块 | `mymodules/wd_advanced_m2o_record_panel`（已确认的正式模块名） |
 | 正式最小依赖 | `web`（不依赖 `stock`） |
 | 上游 | SRS v1.0.0 Frozen、TV-01 v0.1.1 Frozen、TVR-01 v0.2.0 Verification Complete |
 | 编写日期 | 2026-09-18 |
-| 变更范围 | 基于 v0.1.1 评审意见修订本 TDD Draft；不创建新 TV、不创建正式代码 |
+| 变更范围 | 基于 v0.1.0 Frozen 的权限勘误；不创建新 TV、不创建正式代码 |
 
 权威优先级固定为：**Agent Principles > Frozen SRS > TVR verified facts/constraints > Official source facts > TDD decisions > Spike reference**。
 
@@ -105,7 +105,7 @@ tests/
   test_enhanced_many2one.js
 ```
 
-正式依赖只声明 `web`；不得因示例模型而依赖 `stock`。正式测试和运行不得依赖 SPIKE-02 已安装。`security/` 负责配置模型 ACL；配置模型仅配置管理员可直接维护和读取，普通业务用户不直接读取配置模型或 `ir.model.fields`。Preview Loader/helper 以当前用户权限计算并返回安全 DTO。
+正式依赖只声明 `web`；不得因示例模型而依赖 `stock`。正式测试和运行不得依赖 SPIKE-02 已安装。`security/` 负责配置模型 ACL；配置管理员可维护配置，普通业务用户仅可 read 配置模型，不能 create/write/unlink，管理菜单和管理 action 仍只对配置管理员可见。普通用户不因 CC-01 获得额外的 `ir.model.fields` 权限；后续 Loader 所需 metadata 获取方式由 CC-03 Security Contract 定义。
 
 ## 8. Enhanced Many2one Widget
 
@@ -192,15 +192,15 @@ SourceIdentity =
 - `wd.preview.configuration`：`target_model_id`（`ir.model`）、`active`、`line_ids`；
 - `wd.preview.configuration.line`：`configuration_id`、`field_id`（`ir.model.fields`）、`sequence`。
 
-一个 target model 只能有**一套 Preview Configuration**，不是“一套 active 配置”；`active` 是该唯一实体配置的属性，不能用 `active=False` 绕过唯一性。数据库唯一约束（必要时辅以 ORM constraint）必须保证 target model 唯一；line 约束必须保证 `field_id` 所属模型与 target model 相同、同一配置不重复字段、字段存在且可用于展示。配置模型的 `create/write/unlink/read` 仅对配置管理员开放；普通用户不直接读取配置模型。Preview Loader/helper 在当前用户权限边界内解析配置，并只返回安全 DTO。删除/停用配置不得删除业务记录。
+一个 target model 只能有**一套 Preview Configuration**，不是“一套 active 配置”；`active` 是该唯一实体配置的属性，不能用 `active=False` 绕过唯一性。数据库唯一约束（必要时辅以 ORM constraint）必须保证 target model 唯一；line 约束必须保证 `field_id` 所属模型与 target model 相同、同一配置不重复字段、字段存在且可用于展示。配置模型的 read 对普通内部用户开放，但 create/write/unlink 仅对配置管理员开放；普通用户不因配置 read 获得业务记录或字段权限。Preview Loader/helper 在当前用户权限边界内解析配置，并只返回安全 DTO。删除/停用配置不得删除业务记录。
 
-配置管理员维护配置；普通业务用户不直接读取配置模型。空字段、停用、缺失配置均是合法状态，由 server-side Preview Loader 生成安全 fallback DTO。
+配置管理员维护配置；普通业务用户只读配置元数据，不可维护配置。空字段、停用、缺失配置均是合法状态，由 server-side Preview Loader 生成安全 fallback DTO。
 
 ## 15. Preview Data Loading
 
-正式采用最小 server-side Preview Loader model method，不新增 HTTP Controller。普通用户不直接读取配置模型；前端调用 Loader/helper 获取最终安全 DTO。Loader 内部将配置定义读取与业务数据读取分离：
+正式采用最小 server-side Preview Loader model method，不新增 HTTP Controller。前端调用 Loader/helper 获取最终安全 DTO。Loader 将配置定义读取与业务数据读取分离：
 
-1. 配置定义只通过受控的配置访问语义读取，用于解析 target model、字段和 sequence；
+1. 配置定义由当前用户以 read ACL 读取，用于解析 target model、字段和 sequence；
 2. 目标业务记录始终使用当前用户 ORM environment，执行模型访问权限、记录规则和字段访问权限校验，禁止 sudo 业务读取；
 3. 只返回当前用户实际可见的安全 DTO。
 
@@ -210,7 +210,7 @@ SourceIdentity =
 
 ## 16. Permission / Security
 
-配置权限与业务记录权限分离。配置模型仅配置管理员可直接访问；Loader 可以在严格限定的配置元数据读取边界内使用受控特权语义解析配置，但不得以该语义读取任何目标业务记录。业务用户只接收 Loader/helper 基于当前用户业务权限计算出的安全 DTO。目标业务记录始终使用当前用户环境，不 sudo；不能因管理员配置字段而扩大用户模型、记录或字段可见范围。若目标模型本身对当前用户不可读，服务端不得通过配置模型或 helper 间接泄露目标身份。
+配置权限与业务记录权限分离。配置模型 read 对普通内部用户开放，但配置写入仍仅配置管理员可用；Loader 不需要受控特权读取配置。业务用户只接收 Loader/helper 基于当前用户业务权限计算出的安全 DTO。目标业务记录始终使用当前用户环境，不 sudo；不能因配置 read 或管理员配置字段而扩大用户模型、记录或字段可见范围。若目标模型本身对当前用户不可读，服务端不得通过配置模型或 helper 间接泄露目标身份。
 
 安全规则：
 
@@ -424,3 +424,4 @@ any --page unmount--> closed (request invalidated)
 | v0.1.1 | 2026-09-18 | Draft / 仅技术评审 / 不授权编码 | 根据评审修订 Loader 权限结果契约、配置模型访问边界、Opening Mode 来源、fallback 语义、source/state/responsive 的冻结粒度和测试用例；TD-003 标记为 TV-02 Pending Verification；主架构不变 |
 | v0.1.2 | 2026-09-18 | Draft / 仅技术评审 / 不授权编码 | 删除 TV-02 及其 Freeze Gate；冻结 Tab Design Decision、Source Identity 语义、`open_mode` XML contract、server-side Preview Loader、受控配置元数据读取、Frozen SRS fallback、small-screen vertical stacked 和无 Preview cache；主架构不变 |
 | v1.0.0 | 2026-09-18 | Frozen / 技术设计已冻结 | 用户最终评审通过；TDD 设计边界、接口契约、权限边界、生命周期、响应式策略、错误处理和测试策略冻结；后续需单独评审 Implementation Plan / Coding Contract |
+| v1.0.1 | 2026-09-18 | Frozen / 技术设计勘误 | 用户选择方案 A：配置模型对普通内部用户开放 read，create/write/unlink 仍仅配置管理员；不新增 `ir.model.fields` 权限，不改变业务记录当前用户权限和禁止业务 sudo 的边界；主架构不变 |

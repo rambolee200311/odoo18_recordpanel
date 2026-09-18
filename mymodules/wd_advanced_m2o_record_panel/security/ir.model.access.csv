@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_preview_configuration_user,preview.configuration.user,model_wd_preview_configuration,base.group_user,1,0,0,0
+access_preview_configuration_admin,preview.configuration.admin,model_wd_preview_configuration,wd_advanced_m2o_record_panel.group_preview_configuration_admin,1,1,1,1
+access_preview_configuration_line_user,preview.configuration.line.user,model_wd_preview_configuration_line,base.group_user,1,0,0,0
+access_preview_configuration_line_admin,preview.configuration.line.admin,model_wd_preview_configuration_line,wd_advanced_m2o_record_panel.group_preview_configuration_admin,1,1,1,1
