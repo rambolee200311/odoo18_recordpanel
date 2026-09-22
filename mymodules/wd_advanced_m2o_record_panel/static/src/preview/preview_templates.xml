@@ -8,7 +8,13 @@
     <t t-name="wd_advanced_m2o_record_panel.PreviewHost">
         <aside class="o_wd_preview_host" t-if="state.loading or state.payload">
             <t t-if="state.loading">
-                <div class="o_wd_preview_loading">Loading…</div>
+                <section class="o_wd_preview_panel">
+                    <header class="o_wd_preview_header">
+                        <strong>Related record</strong>
+                        <button type="button" class="btn btn-link" t-on-click="close">×</button>
+                    </header>
+                    <div class="o_wd_preview_loading">Loading…</div>
+                </section>
             </t>
             <PreviewRenderer t-else="" payload="state.payload" onClose.bind="close" onOpenRecord.bind="openRecord"/>
         </aside>

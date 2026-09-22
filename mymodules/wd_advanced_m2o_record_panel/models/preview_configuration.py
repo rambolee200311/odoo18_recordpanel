@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-from odoo.exceptions import AccessError, ValidationError
+from odoo.exceptions import AccessError, MissingError, ValidationError
 
 
 class PreviewConfiguration(models.Model):
@@ -67,23 +67,30 @@ class PreviewConfiguration(models.Model):
             target = self.env[target_model].browse(target_res_id)
         except KeyError:
             return {"status": "access_denied", "code": "invalid_target"}
+        if not target.exists():
+            return {"status": "access_denied", "code": "access_denied"}
         try:
             target.check_access_rights("read")
             target.check_access_rule("read")
-        except AccessError:
-            return {"status": "access_denied", "code": "access_denied"}
-        if not target.exists():
+        except (AccessError, MissingError):
             return {"status": "access_denied", "code": "access_denied"}
 
-        configuration = self.search(
-            [("active", "=", True), ("target_model_id.model", "=", target_model)],
-            limit=1,
-        )
-        identity = {
-            "model": target_model,
-            "resId": target.id,
-            "displayName": target.display_name,
-        }
+        try:
+            configuration = self.search(
+                [("active", "=", True), ("target_model_id.model", "=", target_model)],
+                limit=1,
+            )
+        except AccessError:
+            configuration = self.browse()
+
+        try:
+            identity = {
+                "model": target_model,
+                "resId": target.id,
+                "displayName": target.display_name,
+            }
+        except (AccessError, MissingError):
+            return {"status": "access_denied", "code": "access_denied"}
         if not configuration:
             return {
                 "status": "fallback",
@@ -101,16 +108,13 @@ class PreviewConfiguration(models.Model):
             try:
                 target.check_field_access_rights("read", [field_name])
                 value = target.read([field_name], load=False)[0][field_name]
-                if field.type == "many2one" and value:
-                    value = target[field_name].display_name
-                if not isinstance(value, (str, int, float, bool)) and value is not None:
-                    value = str(value)
+                value = self._serialize_preview_value(target[field_name], field, value)
                 rows.append({
                     "name": field_name,
                     "label": line.field_id.field_description,
                     "value": value,
                 })
-            except (AccessError, KeyError):
+            except (AccessError, KeyError, MissingError, ValueError):
                 continue
         if not rows:
             return {
@@ -120,3 +124,17 @@ class PreviewConfiguration(models.Model):
                 "code": "no_readable_fields",
             }
         return {"status": "ready", "target": identity, "rows": rows}
+
+    @staticmethod
+    def _serialize_preview_value(record_value, field, raw_value):
+        if raw_value is None:
+            return None
+        if field.type == "many2one":
+            return record_value.display_name if record_value else False
+        if field.type in {"many2many", "one2many"}:
+            return ", ".join(record_value.mapped("display_name"))
+        if field.type in {"char", "text", "html", "selection", "date", "datetime"}:
+            return str(raw_value)
+        if field.type in {"integer", "float", "monetary", "boolean"}:
+            return raw_value
+        return str(raw_value)

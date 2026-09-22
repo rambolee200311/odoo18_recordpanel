@@ -39,7 +39,11 @@ export class PreviewHost extends Component {
             this.state.payload = payload;
         } catch {
             if (this.pageToken === pageToken && this.requestToken === requestToken) {
-                this.state.payload = { status: "error", code: "load_failed" };
+                this.state.payload = {
+                    status: "error",
+                    code: "load_failed",
+                    message: "Unable to load the related record.",
+                };
             }
         } finally {
             if (this.pageToken === pageToken && this.requestToken === requestToken) {
